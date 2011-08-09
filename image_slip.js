@@ -6,23 +6,43 @@ YUI.add('image_slip', function (Y) {
 		
 		var myNode = node;
 		
-		var dragging = false;
-		var startPoint;
-		var slipperStart;
+		var dragging = false,
+		startPoint,
+		slipperStart,
+		slipper,
+			fileWidth = 2048,
+			fileHeight = 1010,
+			cellSize = 256,
+			numRows  = Math.ceil(fileHeight/cellSize),
+			numCols = Math.ceil(fileWidth/cellSize),
+		rowSide = 0, rowTop = 0,
 		
+		tileMap = {}, winHeight, winWidth;
 		
-		var slipper = myNode.create('<div>');
-		slipper.setStyle('height', '1010px').setStyle('width', '2048px').setStyle('background', '#ccc');
+		for (var i=0; i < numRows; i++) {
+			
+			rowSide = 0;
+			for (var j=0; j < numCols; j++) {
+				var tileKey = 'c' + i + '_' + j;
+				tileMap[tileKey] = {
+					top: rowTop,
+					side: rowSide,
+					url: 'img_'+rowSide+'x'+rowTop+'.jpg'
+				}; //simple hashtable whynot?
+				rowSide = rowSide + 256;
+			
+			};
+			
+			rowTop = rowTop + 256;
+		};
 		
-		slipper.setStyle('background', 'url(smithsonian.jpg)');
-
-		node.appendChild(slipper);
 		
 		
 		//silly run time code generation for event handling!
 		var handlers = {
 			mouseup:function(e){
 				dragging = false;
+				findVisibleTiles();
 			},
 			
 			mousedown:function(e){
@@ -47,6 +67,48 @@ YUI.add('image_slip', function (Y) {
 			}
 		}
 		
+		function init(){
+			slipper = myNode.create('<div>');
+			slipper.setStyle('height', '1010px').setStyle('width', '2048px').setStyle('background', '#ccc');
+
+			slipper.setStyle('background', 'url(http://farm7.static.flickr.com/6016/5958389646_35409015e0.jpg)');
+
+			slipper.setStyle('background-size', '100%');
+			
+			winHeight = myNode.get('offsetHeight');
+			winWidth  = myNode.get('offsetWidth');
+
+
+			node.appendChild(slipper);
+			findVisibleTiles();
+		}
+		
+		function checkVis(tile){
+			
+		}
+		
+		function findVisibleTiles(){
+			var offset = slipper.getXY();
+			var thisTile;
+			console.log(offset);
+			var localHeight = winHeight - offset[1];
+			var localWidth  = winWidth - offset[0];
+			for(var key in tileMap){
+				thisTile = tileMap[key];
+				if(tileMap.hasOwnProperty(key)){
+					if((thisTile.side >= offset[0] && thisTile.side < localWidth) && (thisTile.top <= localHeight && thisTile.top >= offset[1])){
+						var thisEl = slipper.create('<div>');
+						thisEl.setStyle('background', 'url('+ thisTile.url +')');
+						thisEl.setXY([thisTile.side, thisTile.top]);
+						thisEl.addClass('tile');
+						slipper.appendChild(thisEl);
+					}
+				}
+			}
+		}
+		
+		
+		
 		function handleEvent(e){
 			if(handlers[e.type]){
 				handlers[e.type](e);
@@ -61,7 +123,7 @@ YUI.add('image_slip', function (Y) {
 		
 		return {
 			
-				
+			init:init
 			
 		}
 		
