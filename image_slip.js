@@ -97,11 +97,21 @@ YUI.add('image_slip', function (Y) {
 				thisTile = tileMap[key];
 				if(tileMap.hasOwnProperty(key)){
 					if((thisTile.side >= offset[0] && thisTile.side < localWidth) && (thisTile.top <= localHeight && thisTile.top >= offset[1])){
-						var thisEl = slipper.create('<div>');
-						thisEl.setStyle('background', 'url('+ thisTile.url +')');
-						thisEl.setXY([thisTile.side, thisTile.top]);
-						thisEl.addClass('tile');
-						slipper.appendChild(thisEl);
+						if(thisTile.el){
+							thisTile.el.setStyle('display', 'block');
+						}else{
+							var thisEl = slipper.create('<div>');
+							thisEl.setStyle('background', 'url('+ thisTile.url +')');
+							thisEl.setXY([thisTile.side, thisTile.top]);
+							thisEl.addClass('tile');
+							slipper.appendChild(thisEl);
+							thisTile.el = thisEl;
+						}
+
+					}else{
+						if(thisTile.el){
+							thisTile.el.setStyle('display', 'none');
+						}
 					}
 				}
 			}
