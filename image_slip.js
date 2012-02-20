@@ -10,11 +10,11 @@ YUI.add('image_slip', function (Y) {
 		startPoint,
 		slipperStart,
 		slipper,
-			fileWidth = 2048,
-			fileHeight = 1010,
-			cellSize = 256,
-			numRows  = Math.ceil(fileHeight/cellSize),
-			numCols = Math.ceil(fileWidth/cellSize),
+		fileWidth = 2048,
+		fileHeight = 1010,
+		cellSize = 256,
+		numRows  = Math.ceil(fileHeight/cellSize),
+		numCols = Math.ceil(fileWidth/cellSize),
 		rowSide = 0, rowTop = 0,
 		
 		tileMap = {}, winHeight, winWidth;
@@ -24,10 +24,13 @@ YUI.add('image_slip', function (Y) {
 			rowSide = 0;
 			for (var j=0; j < numCols; j++) {
 				var tileKey = 'c' + i + '_' + j;
+				
+
 				tileMap[tileKey] = {
 					top: rowTop,
 					side: rowSide,
 					url: 'img_'+rowSide+'x'+rowTop+'.jpg'
+					// url: 'http://tweetsong.stephenwoods.net/crop?farm=7&path=/6016/5958389646_b75c6409a2_o.jpg&width=2048&crop=256x256%2B'+rowSide+'%2B'+rowTop
 				}; //simple hashtable whynot?
 				rowSide = rowSide + 256;
 			
@@ -60,6 +63,7 @@ YUI.add('image_slip', function (Y) {
 					slipper.setXY(Y.matrixMath.add(slipperStart, diff))
 					
 				}
+				findVisibleTiles();
 			},
 			
 			click:function(e){
@@ -71,7 +75,7 @@ YUI.add('image_slip', function (Y) {
 			slipper = myNode.create('<div>');
 			slipper.setStyle('height', '1010px').setStyle('width', '2048px').setStyle('background', '#ccc');
 
-			slipper.setStyle('background', 'url(http://farm7.static.flickr.com/6016/5958389646_35409015e0.jpg)');
+			// slipper.setStyle('background', 'url(http://farm7.static.flickr.com/6016/5958389646_35409015e0.jpg)');
 
 			slipper.setStyle('background-size', '100%');
 			
@@ -90,12 +94,13 @@ YUI.add('image_slip', function (Y) {
 		function findVisibleTiles(){
 			var offset = slipper.getXY();
 			var thisTile;
-			console.log(offset);
+			
 			var localHeight = winHeight - offset[1];
 			var localWidth  = winWidth - offset[0];
 			for(var key in tileMap){
-				thisTile = tileMap[key];
+				
 				if(tileMap.hasOwnProperty(key)){
+					thisTile = tileMap[key];
 					if((thisTile.side >= offset[0] && thisTile.side < localWidth) && (thisTile.top <= localHeight && thisTile.top >= offset[1])){
 						if(thisTile.el){
 							thisTile.el.setStyle('display', 'block');
